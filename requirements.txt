@@ -1,0 +1,39 @@
+# Django
+Django==5.0.8
+djangorestframework==3.15.2
+
+# CORS
+django-cors-headers==4.4.0
+
+# Celery
+celery==5.4.0
+redis==5.0.8
+
+# Environment variables
+python-dotenv==1.0.1
+
+# Database
+# psycopg2-binary==2.9.9  # Uncomment for PostgreSQL deployment
+# pypiwin32 required for psycopg2 on Windows during development
+
+# Documentation
+drf-spectacular==0.27.2
+
+# Telegram Bot
+python-telegram-bot==21.6
+
+# Filters
+django-filter==24.3
+
+# Authentication
+djangorestframework-simplejwt==5.3.1
+
+# Testing
+pytest==8.3.2
+pytest-django==4.8.0
+pytest-cov==5.0.0
+factory-boy==3.3.1
+
+# Code quality
+black==24.4.2
+ruff==0.5.7
