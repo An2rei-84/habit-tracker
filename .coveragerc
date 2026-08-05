@@ -1,0 +1,13 @@
+[run]
+omit =
+    */.venv/*
+    */manage.py
+    */config/*
+    */migrations/*
+    */tests/*
+    */__pycache__/*
+    */site-packages/*
+    */bot/bot.py
+    */bot/management/*
+    */config/management/*
+    */celery_app.py
