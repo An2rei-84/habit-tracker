@@ -100,7 +100,7 @@ class TelegramBotService:
                 return result.get('result')
             return None
 
-        except requests.RequestException as e:
+        except httpx.HTTPError as e:
             logger.error(f"Ошибка получения информации о боте: {e}")
             return None
 
@@ -129,7 +129,7 @@ class TelegramBotService:
                 return True
             return False
 
-        except requests.RequestException as e:
+        except httpx.HTTPError as e:
             logger.error(f"Ошибка установки webhook: {e}")
             return False
 
