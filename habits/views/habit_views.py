@@ -3,7 +3,7 @@ Views для Habit Tracker API
 """
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from habits.models import Habit
@@ -30,6 +30,15 @@ class HabitViewSet(viewsets.ModelViewSet):
     """
 
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+
+    def get_permissions(self):
+        """
+        Возвращает permissions в зависимости от action
+        Для публичного списка разрешён доступ для неавторизованных
+        """
+        if self.action == 'public':
+            return [AllowAny()]
+        return super().get_permissions()
 
     def get_queryset(self):
         """

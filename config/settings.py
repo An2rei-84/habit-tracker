@@ -149,7 +149,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 5,
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
@@ -185,9 +185,9 @@ CELERY_TIMEZONE = TIME_ZONE
 from celery.schedules import crontab
 
 CELERY_BEAT_SCHEDULE = {
-    'send-daily-reminders': {
+    'send-habit-reminders': {
         'task': 'habits.tasks.send_habit_reminders',
-        'schedule': crontab(hour=9, minute=0),  # Каждый день в 9:00
+        'schedule': crontab(minute='*'),  # Каждую минуту
     },
 }
 

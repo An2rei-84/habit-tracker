@@ -14,8 +14,9 @@ def send_habit_reminders():
     """
     Отправка напоминаний о привычках в Telegram
 
-    Запускается каждый день в 9:00
+    Запускается каждую минуту
     Отправляет уведомления пользователям о привычках, которые нужно выполнить сегодня
+    Учитывает время выполнения привычки
     """
     today = timezone.now().date()
     current_time = timezone.now().time()
@@ -32,23 +33,37 @@ def send_habit_reminders():
     for habit in habits_to_remind:
         # Проверяем, нужно ли отправлять уведомление сегодня
         if should_send_reminder_today(habit, today):
-            try:
-                # Формируем сообщение
-                message = format_habit_reminder(habit)
+            # Проверяем, совпадает ли текущее время с временем привычки (с точностью до минуты)
+            if should_send_reminder_now(habit, current_time):
+                try:
+                    # Формируем сообщение
+                    message = format_habit_reminder(habit)
 
-                # Отправляем в Telegram
-                bot_service = TelegramBotService()
-                bot_service.send_message(
-                    chat_id=habit.user.telegram_chat_id,
-                    text=message
-                )
-                sent_count += 1
-            except Exception as e:
-                print(f"Ошибка отправки уведомления пользователю {habit.user.username}: {e}")
-                failed_count += 1
+                    # Отправляем в Telegram
+                    bot_service = TelegramBotService()
+                    bot_service.send_message(
+                        chat_id=habit.user.telegram_chat_id,
+                        text=message
+                    )
+                    sent_count += 1
+                except Exception as e:
+                    print(f"Ошибка отправки уведомления пользователю {habit.user.username}: {e}")
+                    failed_count += 1
 
     print(f"Отправлено уведомлений: {sent_count}, Ошибок: {failed_count}")
     return {'sent': sent_count, 'failed': failed_count}
+
+
+def should_send_reminder_now(habit, current_time):
+    """
+    Определяет, нужно ли отправить уведомление сейчас
+
+    Сравнивает текущее время с временем привычки (с точностью до минуты)
+    """
+    return (
+        habit.time.hour == current_time.hour and
+        habit.time.minute == current_time.minute
+    )
 
 
 def should_send_reminder_today(habit, today):
