@@ -8,7 +8,12 @@ import pytest
 from django.utils import timezone
 
 from habits.models import Habit
-from habits.tasks import send_habit_reminders, should_send_reminder_today, format_habit_reminder
+from habits.tasks import (
+    send_habit_reminders,
+    should_send_reminder_today,
+    should_send_reminder_now,
+    format_habit_reminder
+)
 from users.models import User
 
 
@@ -16,7 +21,8 @@ class TestCeleryTasks:
     """Тесты Celery задач"""
 
     @patch('habits.tasks.TelegramBotService')
-    def test_send_habit_reminders(self, mock_bot_service, db):
+    @patch('habits.tasks.timezone')
+    def test_send_habit_reminders(self, mock_timezone, mock_bot_service, db):
         """Тест отправки напоминаний"""
         # Создаём пользователя с telegram_chat_id
         user = User.objects.create_user(
@@ -26,11 +32,16 @@ class TestCeleryTasks:
             telegram_chat_id='123456789'
         )
 
-        # Создаём привычку
+        # Мокаем время - устанавливаем текущее время на 09:00
+        from datetime import datetime, time as dt_time
+        mock_now = datetime(2026, 8, 6, 9, 0, 0)
+        mock_timezone.now.return_value = mock_now
+
+        # Создаём привычку на 09:00
         habit = Habit.objects.create(
             user=user,
             place='дома',
-            time='09:00',
+            time=dt_time(9, 0),
             action='попить воды',
             periodicity=1,
             duration_to_complete=30
@@ -46,6 +57,28 @@ class TestCeleryTasks:
 
         # Проверяем, что send_message был вызван
         assert result['sent'] >= 1
+
+    def test_should_send_reminder_now_matching_time(self, habit):
+        """Тест: отправлять когда текущее время совпадает с временем привычки"""
+        from datetime import time as dt_time
+
+        # Текущее время совпадает с временем привычки
+        current_time = dt_time(9, 0)
+        habit.time = dt_time(9, 0)
+
+        result = should_send_reminder_now(habit, current_time)
+        assert result is True
+
+    def test_should_send_reminder_now_not_matching_time(self, habit):
+        """Тест: не отправлять когда текущее время не совпадает"""
+        from datetime import time as dt_time
+
+        # Текущее время не совпадает с временем привычки
+        current_time = dt_time(10, 0)
+        habit.time = dt_time(9, 0)
+
+        result = should_send_reminder_now(habit, current_time)
+        assert result is False
 
     def test_should_send_reminder_today_created_today(self, user):
         """Тест: отправлять уведомление для только что созданной привычки"""
