@@ -1,6 +1,7 @@
 """
 Сервис для работы с Telegram Bot API
 """
+
 import logging
 from typing import Optional
 
@@ -23,7 +24,7 @@ class TelegramBotService:
         """
         Получает токен бота из настроек
         """
-        token = getattr(settings, 'TELEGRAM_BOT_TOKEN', '')
+        token = getattr(settings, "TELEGRAM_BOT_TOKEN", "")
         if not token:
             raise ValueError("TELEGRAM_BOT_TOKEN не настроен в settings")
         return token
@@ -38,11 +39,7 @@ class TelegramBotService:
 
     @classmethod
     def send_message(
-        cls,
-        chat_id: str,
-        text: str,
-        parse_mode: str = 'HTML',
-        disable_web_page_preview: bool = True
+        cls, chat_id: str, text: str, parse_mode: str = "HTML", disable_web_page_preview: bool = True
     ) -> bool:
         """
         Отправляет сообщение в чат Telegram
@@ -59,10 +56,10 @@ class TelegramBotService:
         url = f"{cls.get_base_url()}sendMessage"
 
         payload = {
-            'chat_id': chat_id,
-            'text': text,
-            'parse_mode': parse_mode,
-            'disable_web_page_preview': disable_web_page_preview
+            "chat_id": chat_id,
+            "text": text,
+            "parse_mode": parse_mode,
+            "disable_web_page_preview": disable_web_page_preview,
         }
 
         try:
@@ -70,7 +67,7 @@ class TelegramBotService:
             response.raise_for_status()
 
             result = response.json()
-            if result.get('ok'):
+            if result.get("ok"):
                 logger.info(f"Сообщение отправлено в чат {chat_id}")
                 return True
             else:
@@ -96,8 +93,8 @@ class TelegramBotService:
             response.raise_for_status()
 
             result = response.json()
-            if result.get('ok'):
-                return result.get('result')
+            if result.get("ok"):
+                return result.get("result")
             return None
 
         except httpx.HTTPError as e:
@@ -117,14 +114,14 @@ class TelegramBotService:
         """
         url = f"{cls.get_base_url()}setWebhook"
 
-        payload = {'url': webhook_url}
+        payload = {"url": webhook_url}
 
         try:
             response = httpx.post(url, json=payload, timeout=10)
             response.raise_for_status()
 
             result = response.json()
-            if result.get('ok'):
+            if result.get("ok"):
                 logger.info(f"Webhook установлен: {webhook_url}")
                 return True
             return False
@@ -148,11 +145,11 @@ class TelegramBotService:
             response.raise_for_status()
 
             result = response.json()
-            if result.get('ok'):
+            if result.get("ok"):
                 logger.info("Webhook удалён")
                 return True
             return False
 
-        except requests.RequestException as e:
+        except httpx.HTTPError as e:
             logger.error(f"Ошибка удаления webhook: {e}")
             return False

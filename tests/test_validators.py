@@ -1,6 +1,7 @@
 """
 Тесты для валидаторов
 """
+
 import pytest
 from django.core.exceptions import ValidationError
 
@@ -19,20 +20,17 @@ class TestHabitValidators:
     def test_validate_reward_and_related_habit_both_set(self):
         """Тест: ошибка когда и reward, и related_habit указаны"""
         with pytest.raises(ValidationError):
-            validate_reward_and_related_habit(
-                reward='шоколадка',
-                related_habit='some_habit'
-            )
+            validate_reward_and_related_habit(reward="шоколадка", related_habit="some_habit")
 
     def test_validate_reward_and_related_habit_only_reward(self):
         """Тест: ошибка не возникает когда только reward указан"""
         # Не должно вызывать исключение
-        validate_reward_and_related_habit(reward='шоколадка', related_habit=None)
+        validate_reward_and_related_habit(reward="шоколадка", related_habit=None)
 
     def test_validate_reward_and_related_habit_only_related(self):
         """Тест: ошибка не возникает когда только related_habit указан"""
         # Не должно вызывать исключение
-        validate_reward_and_related_habit(reward=None, related_habit='some_habit')
+        validate_reward_and_related_habit(reward=None, related_habit="some_habit")
 
     def test_validate_execution_time_exceeds_120(self):
         """Тест: ошибка когда время больше 120 секунд"""
@@ -68,44 +66,32 @@ class TestHabitValidators:
     def test_validate_pleasant_habit_with_reward(self):
         """Тест: ошибка когда приятная привычка имеет вознаграждение"""
         with pytest.raises(ValidationError):
-            validate_pleasant_habit_restrictions(
-                is_pleasant=True,
-                reward='шоколадка',
-                related_habit=None
-            )
+            validate_pleasant_habit_restrictions(is_pleasant=True, reward="шоколадка", related_habit=None)
 
     def test_validate_pleasant_habit_with_related(self):
         """Тест: ошибка когда приятная привычка имеет связанную привычку"""
         with pytest.raises(ValidationError):
-            validate_pleasant_habit_restrictions(
-                is_pleasant=True,
-                reward=None,
-                related_habit='some_habit'
-            )
+            validate_pleasant_habit_restrictions(is_pleasant=True, reward=None, related_habit="some_habit")
 
     def test_validate_pleasant_habit_valid(self):
         """Тест: валидная приятная привычка"""
         # Не должно вызывать исключение
-        validate_pleasant_habit_restrictions(
-            is_pleasant=True,
-            reward=None,
-            related_habit=None
-        )
+        validate_pleasant_habit_restrictions(is_pleasant=True, reward=None, related_habit=None)
 
     def test_validate_related_habit_not_pleasant(self, db):
         """Тест: ошибка когда связанная привычка не приятная"""
         from habits.models import Habit
         from users.models import User
 
-        user = User.objects.create_user(username='test', password='pass')
+        user = User.objects.create_user(username="test", password="pass")
         related = Habit(
             user=user,
-            place='дома',
-            time='09:00',
-            action='привычка',
+            place="дома",
+            time="09:00",
+            action="привычка",
             is_pleasant=False,
             periodicity=1,
-            duration_to_complete=30
+            duration_to_complete=30,
         )
 
         with pytest.raises(ValidationError):
@@ -116,15 +102,15 @@ class TestHabitValidators:
         from habits.models import Habit
         from users.models import User
 
-        user = User.objects.create_user(username='test', password='pass')
+        user = User.objects.create_user(username="test", password="pass")
         related = Habit(
             user=user,
-            place='дома',
-            time='09:00',
-            action='приятная привычка',
+            place="дома",
+            time="09:00",
+            action="приятная привычка",
             is_pleasant=True,
             periodicity=1,
-            duration_to_complete=30
+            duration_to_complete=30,
         )
 
         # Не должно вызывать исключение

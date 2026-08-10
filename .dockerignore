@@ -1,0 +1,47 @@
+# Virtual environment
+.venv/
+venv/
+ENV/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Django
+db.sqlite3
+db.sqlite3-journal
+*.log
+media/
+staticfiles/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+.coveragerc
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+
+# Documentation
+README.md
+
+# PyProject
+pyproject.toml
+pytest.ini
