@@ -1,10 +1,9 @@
 """
 Telegram Bot для Habit Tracker
 """
-import logging
-from datetime import datetime, time
 
-import telegram
+import logging
+
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 
@@ -56,7 +55,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "❓ Если есть вопросы - напишите администратору."
     )
 
-    await update.message.reply_text(message, parse_mode='HTML')
+    await update.message.reply_text(message, parse_mode="HTML")
 
 
 async def link_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -72,9 +71,7 @@ async def link_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = User.objects.filter(telegram_chat_id=str(chat_id)).first()
 
     if user:
-        await update.message.reply_text(
-            f"✅ Ваш аккаунт уже привязан: {user.username}"
-        )
+        await update.message.reply_text(f"✅ Ваш аккаунт уже привязан: {user.username}")
         return
 
     # Пытаемся найти пользователя по username
@@ -85,8 +82,7 @@ async def link_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         user.telegram_chat_id = str(chat_id)
         user.save()
         await update.message.reply_text(
-            f"✅ Аккаунт успешно привязан: {user.username}\n\n"
-            "Теперь вы будете получать напоминания о привычках!"
+            f"✅ Аккаунт успешно привязан: {user.username}\n\n" "Теперь вы будете получать напоминания о привычках!"
         )
         logger.info(f"Пользователь {user.username} привязал chat_id: {chat_id}")
     else:
@@ -111,10 +107,7 @@ async def list_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = User.objects.filter(telegram_chat_id=chat_id).first()
 
     if not user:
-        await update.message.reply_text(
-            "❌ Ваш аккаунт не привязан.\n\n"
-            "Используйте команду /link для привязки."
-        )
+        await update.message.reply_text("❌ Ваш аккаунт не привязан.\n\n" "Используйте команду /link для привязки.")
         return
 
     # Получаем привычки пользователя
@@ -122,8 +115,7 @@ async def list_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if not habits.exists():
         await update.message.reply_text(
-            "📋 У вас пока нет привычек.\n\n"
-            "Создайте привычки на сайте, чтобы получать напоминания!"
+            "📋 У вас пока нет привычек.\n\n" "Создайте привычки на сайте, чтобы получать напоминания!"
         )
         return
 
@@ -142,7 +134,7 @@ async def list_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         message += "\n"
 
-    await update.message.reply_text(message, parse_mode='HTML')
+    await update.message.reply_text(message, parse_mode="HTML")
 
 
 def run_bot():
