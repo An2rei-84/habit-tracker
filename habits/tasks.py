@@ -1,9 +1,9 @@
 """
 Celery задачи для отправки напоминаний о привычках
 """
+
 from celery import shared_task
 from django.utils import timezone
-from datetime import timedelta
 
 from habits.models import Habit
 from bot.services import TelegramBotService
@@ -22,10 +22,7 @@ def send_habit_reminders():
     current_time = timezone.now().time()
 
     # Находим привычки, которые нужно выполнить сегодня
-    habits_to_remind = Habit.objects.filter(
-        is_pleasant=False,
-        user__telegram_chat_id__isnull=False
-    )
+    habits_to_remind = Habit.objects.filter(is_pleasant=False, user__telegram_chat_id__isnull=False)
 
     sent_count = 0
     failed_count = 0
@@ -41,17 +38,14 @@ def send_habit_reminders():
 
                     # Отправляем в Telegram
                     bot_service = TelegramBotService()
-                    bot_service.send_message(
-                        chat_id=habit.user.telegram_chat_id,
-                        text=message
-                    )
+                    bot_service.send_message(chat_id=habit.user.telegram_chat_id, text=message)
                     sent_count += 1
                 except Exception as e:
                     print(f"Ошибка отправки уведомления пользователю {habit.user.username}: {e}")
                     failed_count += 1
 
     print(f"Отправлено уведомлений: {sent_count}, Ошибок: {failed_count}")
-    return {'sent': sent_count, 'failed': failed_count}
+    return {"sent": sent_count, "failed": failed_count}
 
 
 def should_send_reminder_now(habit, current_time):
@@ -60,10 +54,7 @@ def should_send_reminder_now(habit, current_time):
 
     Сравнивает текущее время с временем привычки (с точностью до минуты)
     """
-    return (
-        habit.time.hour == current_time.hour and
-        habit.time.minute == current_time.minute
-    )
+    return habit.time.hour == current_time.hour and habit.time.minute == current_time.minute
 
 
 def should_send_reminder_today(habit, today):
@@ -87,7 +78,7 @@ def format_habit_reminder(habit):
     """
     Форматирует сообщение о привычке для отправки в Telegram
     """
-    message = f"⏰ Напоминание о привычке!\n\n"
+    message = "⏰ Напоминание о привычке!\n\n"
     message += f"📌 {habit.action}\n"
     message += f"📍 Место: {habit.place}\n"
     message += f"⏰ Время: {habit.time}\n"
@@ -98,6 +89,6 @@ def format_habit_reminder(habit):
     elif habit.related_habit:
         message += f"🎁 Вознаграждение: {habit.related_habit.action}\n"
 
-    message += f"\n💪 Не забудь выполнить! Ты можешь это! 💪"
+    message += "\n💪 Не забудь выполнить! Ты можешь это! 💪"
 
     return message

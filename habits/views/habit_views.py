@@ -1,7 +1,8 @@
 """
 Views для Habit Tracker API
 """
-from rest_framework import viewsets, status
+
+from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -36,7 +37,7 @@ class HabitViewSet(viewsets.ModelViewSet):
         Возвращает permissions в зависимости от action
         Для публичного списка разрешён доступ для неавторизованных
         """
-        if self.action == 'public':
+        if self.action == "public":
             return [AllowAny()]
         return super().get_permissions()
 
@@ -46,28 +47,24 @@ class HabitViewSet(viewsets.ModelViewSet):
         """
         user = self.request.user
 
-        if self.action == 'public':
+        if self.action == "public":
             # Для публичных привычек показываем все публичные привычки
-            return Habit.objects.filter(is_public=True).select_related(
-                'user', 'related_habit'
-            )
+            return Habit.objects.filter(is_public=True).select_related("user", "related_habit")
         else:
             # Для остальных действий - только привычки текущего пользователя
-            return Habit.objects.filter(user=user).select_related(
-                'related_habit'
-            )
+            return Habit.objects.filter(user=user).select_related("related_habit")
 
     def get_serializer_class(self):
         """
         Выбирает сериализатор в зависимости от action
         """
-        if self.action == 'list':
+        if self.action == "list":
             return HabitListSerializer
-        elif self.action == 'retrieve':
+        elif self.action == "retrieve":
             return HabitDetailSerializer
-        elif self.action == 'create':
+        elif self.action == "create":
             return HabitCreateSerializer
-        elif self.action in ['update', 'partial_update']:
+        elif self.action in ["update", "partial_update"]:
             return HabitUpdateSerializer
         return HabitDetailSerializer
 
@@ -77,7 +74,7 @@ class HabitViewSet(viewsets.ModelViewSet):
         """
         serializer.save(user=self.request.user)
 
-    @action(detail=False, methods=['get'], url_path='my')
+    @action(detail=False, methods=["get"], url_path="my")
     def my_habits(self, request):
         """
         Получить список привычек текущего пользователя
@@ -94,7 +91,7 @@ class HabitViewSet(viewsets.ModelViewSet):
         serializer = HabitListSerializer(queryset, many=True)
         return Response(serializer.data)
 
-    @action(detail=False, methods=['get'], url_path='public')
+    @action(detail=False, methods=["get"], url_path="public")
     def public(self, request):
         """
         Получить список публичных привычек

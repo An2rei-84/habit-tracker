@@ -1,0 +1,31 @@
+# Django
+Django==5.0.8
+djangorestframework==3.15.2
+
+# CORS
+django-cors-headers==4.4.0
+
+# Celery
+celery==5.4.0
+redis==5.0.8
+
+# Environment variables
+python-dotenv==1.0.1
+
+# Database - PostgreSQL driver for production
+psycopg2-binary==2.9.9
+
+# Documentation
+drf-spectacular==0.27.2
+
+# Telegram Bot
+python-telegram-bot==21.6
+
+# Filters
+django-filter==24.3
+
+# Authentication
+djangorestframework-simplejwt==5.3.1
+
+# Production server
+gunicorn==23.0.0
