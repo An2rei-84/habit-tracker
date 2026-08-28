@@ -90,6 +90,45 @@ class TestTelegramBotService:
         assert result is not None
         assert result["username"] == "test_bot"
 
+    @patch("bot.services.httpx.get")
+    def test_get_me_http_error(self, mock_get, settings):
+        """Тест сетевой ошибки при получении информации о боте"""
+        settings.TELEGRAM_BOT_TOKEN = "test_token_123"
+
+        import httpx
+
+        mock_get.side_effect = httpx.HTTPError("Network error")
+
+        result = TelegramBotService.get_me()
+
+        assert result is None
+
+    @patch("bot.services.httpx.post")
+    def test_set_webhook_http_error(self, mock_post, settings):
+        """Тест сетевой ошибки при установке webhook"""
+        settings.TELEGRAM_BOT_TOKEN = "test_token_123"
+
+        import httpx
+
+        mock_post.side_effect = httpx.HTTPError("Network error")
+
+        result = TelegramBotService.set_webhook("https://example.com/webhook")
+
+        assert result is False
+
+    @patch("bot.services.httpx.post")
+    def test_delete_webhook_http_error(self, mock_post, settings):
+        """Тест сетевой ошибки при удалении webhook"""
+        settings.TELEGRAM_BOT_TOKEN = "test_token_123"
+
+        import httpx
+
+        mock_post.side_effect = httpx.HTTPError("Network error")
+
+        result = TelegramBotService.delete_webhook()
+
+        assert result is False
+
     @patch("bot.services.httpx.post")
     def test_set_webhook_success(self, mock_post, settings):
         """Тест успешной установки webhook"""
