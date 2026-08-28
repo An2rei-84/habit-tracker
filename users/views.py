@@ -1,6 +1,7 @@
 """
 Views для авторизации и регистрации пользователей
 """
+
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -17,6 +18,7 @@ class RegisterView(generics.CreateAPIView):
 
     POST /api/users/register/
     """
+
     queryset = User.objects.all()
     permission_classes = [AllowAny]
     serializer_class = RegisterSerializer
@@ -32,11 +34,14 @@ class RegisterView(generics.CreateAPIView):
         # Генерируем токены
         refresh = RefreshToken.for_user(user)
 
-        return Response({
-            'user': UserSerializer(user).data,
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }, status=status.HTTP_201_CREATED)
+        return Response(
+            {
+                "user": UserSerializer(user).data,
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+            },
+            status=status.HTTP_201_CREATED,
+        )
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -45,6 +50,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 
     POST /api/users/token/
     """
+
     serializer_class = None  # Используем стандартный serializer из simplejwt
 
     def post(self, request, *args, **kwargs):
@@ -56,14 +62,15 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         # Добавляем информацию о пользователе в ответ
         if response.status_code == status.HTTP_200_OK:
             from rest_framework_simplejwt.authentication import JWTAuthentication
+
             jwt_auth = JWTAuthentication()
 
             # Декодируем токен для получения user_id
-            token = response.data['access']
+            token = response.data["access"]
             validated_token = jwt_auth.get_validated_token(token)
             user = jwt_auth.get_user(validated_token)
 
-            response.data['user'] = UserSerializer(user).data
+            response.data["user"] = UserSerializer(user).data
 
         return response
 
@@ -75,6 +82,7 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
     GET /api/users/profile/
     PUT/PATCH /api/users/profile/
     """
+
     serializer_class = UserSerializer
 
     def get_object(self):
