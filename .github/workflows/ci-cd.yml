@@ -122,7 +122,7 @@ jobs:
             cat > .env << 'EOF'
           DEBUG=False
           SECRET_KEY=${{ secrets.SECRET_KEY }}
-          ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}
+          ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }},localhost
           DB_ENGINE=django.db.backends.postgresql
           DB_NAME=habit_tracker
           DB_USER=postgres

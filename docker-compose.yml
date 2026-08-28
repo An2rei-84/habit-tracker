@@ -136,11 +136,14 @@ services:
       - habit_network
 
   # Telegram Bot
+  # Запускается только с профилем "bot" (docker compose --profile bot up):
+  # без настроенного TELEGRAM_BOT_TOKEN бот не имеет смысла.
   telegram_bot:
     image: ghcr.io/an2rei-84/habit-tracker:latest
     build:
       context: .
       dockerfile: Dockerfile
+    profiles: ["bot"]
     container_name: habit_tracker_telegram_bot
     command: python manage.py runbot
     environment:
