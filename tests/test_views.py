@@ -128,8 +128,8 @@ class TestHabitViews:
 
         url = reverse("habits:habit-detail", kwargs={"pk": habit.pk})
         response = api_client.get(url)
-        # Должен быть 404, так как привычка не в queryset другого пользователя
-        assert response.status_code in [status.HTTP_200_OK, status.HTTP_403_FORBIDDEN, status.HTTP_404_NOT_FOUND]
+        # Чужая привычка не попадает в queryset (фильтр по владельцу), поэтому 404
+        assert response.status_code == status.HTTP_404_NOT_FOUND
 
     def test_update_habit_owner(self, authenticated_client, habit):
         """Тест редактирования своей привычки"""
@@ -177,9 +177,10 @@ class TestHabitViews:
         assert len(response.data["results"]) == 5  # Page size = 5
 
         # Проверяем вторую страницу
-        if response.data["next"]:
-            response = client.get(response.data["next"])
-            assert len(response.data["results"]) == 5
+        assert response.data["next"] is not None
+        response = client.get(response.data["next"])
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.data["results"]) == 5
 
 
 class TestUserProfileView:
