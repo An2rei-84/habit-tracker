@@ -96,8 +96,12 @@ jobs:
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" | tr -d '\r' > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
+          ssh-keygen -y -f ~/.ssh/deploy_key > /dev/null || {
+            echo "::error::SSH_PRIVATE_KEY secret is malformed. Re-save it: full private key including -----BEGIN/END ... PRIVATE KEY----- lines, LF line endings, no extra spaces."
+            exit 1
+          }
           ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
       - name: Create .env file on server
