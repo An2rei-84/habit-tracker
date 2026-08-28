@@ -1,5 +1,7 @@
 # Habit Tracker
 
+![CI/CD](https://github.com/An2rei-84/habit-tracker/actions/workflows/ci-cd.yml/badge.svg?branch=develop)
+
 Трекер полезных привычек на основе книги «Атомные привычки» Джеймса Клира.
 
 ## Описание проекта
@@ -47,8 +49,8 @@
 
 1. Клонируйте репозиторий:
 ```bash
-git clone <repository-url>
-cd Habit Tracker
+git clone https://github.com/An2rei-84/habit-tracker.git
+cd habit-tracker
 ```
 
 2. Создайте файл `.env` на основе `.env.template`:
@@ -221,64 +223,41 @@ GitHub Actions автоматически выполняет:
 
 ### Требуемые GitHub Secrets
 
-Для деплоя на сервер настройте следующие Secrets в репозитории:
+Для деплоя на свой сервер настройте следующие Secrets в репозитории:
 
 | Secret | Значение | Описание |
 |--------|----------|----------|
 | `SSH_PRIVATE_KEY` | Ваш приватный ключ | Приватный SSH ключ для доступа к серверу |
-| `SSH_HOST` | `YOUR_SERVER_IP` | IP адрес сервера |
-| `SSH_USER` | `root` | Имя пользователя SSH |
+| `SSH_HOST` | IP или домен | Адрес вашего сервера |
+| `SSH_USER` | Пользователь | Пользователь SSH (рекомендуется не root) |
 | `SECRET_KEY` | Сгенерировать | Django SECRET_KEY для production |
 | `DB_PASSWORD` | Придумать | Пароль PostgreSQL (рекомендуется сложный) |
 | `TELEGRAM_BOT_TOKEN` | Ваш токен | Токен Telegram бота от @BotFather |
-| `ALLOWED_HOSTS` | IP или домен | Например: `YOUR_SERVER_IP,yourdomain.com` |
+| `ALLOWED_HOSTS` | IP или домен | Например: `your-domain.com` |
 | `CORS_ALLOWED_ORIGINS` | Фронтенд URL | Например: `https://yourdomain.com` |
 
 ### Требования к серверу
 
-**Сервер:** `YOUR_SERVER_IP` (уже готов к работе)
-
-**Системные требования:**
-- Ubuntu 20.04+ / Debian 11+
+Любой VPS (Ubuntu 20.04+ / Debian 11+):
 - Не менее 2GB RAM
 - 20GB свободного дискового пространства
-
-**Установленное ПО:**
-- ✅ Docker
-- ✅ Docker Compose
-- ✅ SSH доступ
+- Установленные Docker и Docker Compose
+- SSH-доступ по ключу
 
 **Открытые порты:**
 - 80 (HTTP)
 - 443 (HTTPS)
 - 22 (SSH)
 
-**Открытые порты:**
-- 80 (HTTP)
-- 443 (HTTPS)
-- 22 (SSH)
+> **Безопасность:** запретите парольный вход SSH (`PasswordAuthentication no` в `/etc/ssh/sshd_config`), не деплойте под root и настройте fail2ban.
 
 ### Процесс деплоя
 
-1. **Проверьте SSH доступ к серверу:**
-```bash
-ssh root@YOUR_SERVER_IP
-```
-
-2. **Скопируйте ваш приватный SSH ключ** для добавления в GitHub Secrets:
-```bash
-# На Windows (PowerShell)
-Get-Content ~/.ssh/id_rsa
-
-# На Linux/Mac
-cat ~/.ssh/id_rsa
-```
-
-3. **Добавьте Secrets в GitHub репозиторий:**
+1. **Добавьте Secrets в GitHub репозиторий:**
    - Перейдите в Settings → Secrets and variables → Actions
    - Добавьте все секреты из таблицы выше
 
-4. **Пуш в ветку `develop` запускает автоматический деплой:**
+2. **Пуш в ветку `develop` запускает автоматический деплой:**
 ```bash
 git checkout develop
 git merge feature
@@ -287,7 +266,7 @@ git push origin develop
 
 ### Структура на сервере
 
-После деплоя структура на сервере (YOUR_SERVER_IP):
+После деплоя структура на сервере:
 ```
 ~/habit-tracker/
 ├── docker-compose.yml
@@ -308,9 +287,9 @@ pytest
 pytest --cov=. --cov-report=html
 ```
 
-**Покрытие тестами:** 89%
+**Покрытие тестами:** 90%
 
-📊 **HTML отчёт о покрытии:** `htmlcov/index.html` (уже сгенерирован, откройте в браузере)
+📊 **HTML отчёт о покрытии:** `htmlcov/index.html` (генерируется при запуске `pytest`)
 
 ---
 
